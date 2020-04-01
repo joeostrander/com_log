@@ -80,6 +80,11 @@ namespace com_log
             comboBoxComPort1.ValueMember = "Key";
             comboBoxComPort1.DisplayMember = "Value";
 
+            comboBoxBitsPerSecond.SelectedItem = "115200";
+            comboBoxDataBits.SelectedItem = "8";
+            comboBoxFlowControl.SelectedIndex = 0;
+            comboBoxStopBits.SelectedIndex = 0;
+            comboBoxParity.SelectedIndex = 0;
 
             this.Text = Application.ProductName;
 
@@ -145,7 +150,7 @@ namespace com_log
             if (saveFileDialog1.ShowDialog() == DialogResult.OK)
             {
                 logFilename = saveFileDialog1.FileName;
-                linkLabelFilename.Text = logFilename;
+                linkLabelFilename.Text = Path.GetFileName(saveFileDialog1.FileName);
             }
         }
 
@@ -196,18 +201,51 @@ namespace com_log
                 buttonConnect.Enabled = true;
                 return;
             }
-            //serialPort1 = new SerialPort(strPortName, 9600, Parity.None, 8, StopBits.One);
+
             serialPort1.PortName = strPortName1;
-            serialPort1.BaudRate = 115200;
+            serialPort1.BaudRate = Int32.Parse(comboBoxBitsPerSecond.SelectedItem.ToString());
             serialPort1.ReadBufferSize = 1024;
             //serialPort1.Encoding = Encoding.UTF8;
 
-            serialPort1.Parity = Parity.None;
-            //serialPort1.Handshake = Handshake.XOnXOff;  // TODO... should I do this? does GCA term do it?
-            serialPort1.Handshake = Handshake.None;
-            serialPort1.DataBits = 8;
-            serialPort1.StopBits = StopBits.One;
-            //serialPort1.WriteBufferSize = 1;
+
+            switch (comboBoxParity.SelectedItem.ToString())
+            {
+                case "Even":
+                    serialPort1.Parity = Parity.Even;
+                    break;
+                case "Odd":
+                    serialPort1.Parity = Parity.Odd;
+                    break;
+                case "None":
+                    serialPort1.Parity = Parity.None;
+                    break;
+                case "Mark":
+                    serialPort1.Parity = Parity.Mark;
+                    break;
+                case "Space":
+                    serialPort1.Parity = Parity.Space;
+                    break;
+            }
+
+
+            serialPort1.DataBits = Int32.Parse(comboBoxDataBits.SelectedItem.ToString());
+            serialPort1.StopBits = (StopBits)Int32.Parse(comboBoxStopBits.SelectedItem.ToString());
+
+            switch (comboBoxFlowControl.SelectedItem.ToString())
+            {
+                case "Xon / Xoff":
+                    serialPort1.Handshake = Handshake.XOnXOff;
+                    break;
+                case "Hardware":
+                    serialPort1.Handshake = Handshake.RequestToSend;
+                    break;
+                case "Both":
+                    serialPort1.Handshake = Handshake.RequestToSendXOnXOff;
+                    break;
+                case "None":
+                    serialPort1.Handshake = Handshake.None;
+                    break;
+            }
 
 
             try
