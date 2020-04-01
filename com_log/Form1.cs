@@ -63,9 +63,6 @@ namespace com_log
             //}
 
             close_log_file(false);
-            //buttonStart.Enabled = true;
-            //buttonStop.Enabled = false;
-            //buttonStart.Text = "&Start";
 
         }
 
