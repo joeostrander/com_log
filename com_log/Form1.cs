@@ -16,6 +16,9 @@ namespace com_log
 {
     public partial class Form1 : Form
     {
+        const byte XON_CHARACTER = 0x11;
+        const byte XOFF_CHARACTER = 0x13;
+
         private static SerialPort serialPort1 = new SerialPort();
 
         private static List<KeyValuePair<string, string>> listPorts1 = new List<KeyValuePair<string, string>>();
@@ -26,6 +29,7 @@ namespace com_log
         //private int totalBytes;
         private string logFilename;
         private bool bool_logging = false;
+        private DateTime last_xon;
 
         public void ThreadSafeDelegate(MethodInvoker method)
         {
@@ -88,6 +92,7 @@ namespace com_log
 
             this.Text = Application.ProductName;
 
+            last_xon = DateTime.Now;
             timer1.Enabled = true;
         }
 
@@ -151,6 +156,7 @@ namespace com_log
             {
                 logFilename = saveFileDialog1.FileName;
                 linkLabelFilename.Text = Path.GetFileName(saveFileDialog1.FileName);
+                this.toolTip1.SetToolTip(this.linkLabelFilename, saveFileDialog1.FileName);
             }
         }
 
@@ -164,9 +170,6 @@ namespace com_log
 
             buttonConnect.Enabled = true;
 
-            bool_logging = false;
-
-            // maybe not... close_log_file(true);
 
         }
 
@@ -366,6 +369,25 @@ namespace com_log
                 buttonConnect.Text = "&Disconnect";
                 toolStripStatusLabel1.Text = "Connected to port:  " + serialPort1.PortName;
 
+                //TESTING!!!
+                // if connected... and XON/XOFF is selected... send XON if ready to receive... every second?
+                if (serialPort1.Handshake == Handshake.XOnXOff)
+                {
+                    if (serialPort1.BytesToRead == 0)
+                    {
+                        //if ( DateTime.Now - last_xon ) 
+                        //TimeSpan ts = new TimeSpan();
+                        TimeSpan elapsed = DateTime.Now - last_xon;
+                        if (elapsed.TotalMilliseconds >= 1000)
+                        {
+                            serialPort1.Write(new byte[] { XON_CHARACTER }, 0, 1);
+                            last_xon = DateTime.Now;
+                        }
+                    }
+
+                }
+
+
             }
             else
             {
@@ -419,10 +441,10 @@ namespace com_log
                     return;
             }
 
-            if (!boolConnected)
-            {
-                return;
-            }
+            //if (!boolConnected)
+            //{
+            //    return;
+            //}
 
             if (bool_logging)
             {
@@ -466,12 +488,18 @@ namespace com_log
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
+                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
             }
         }
 
         private void checkBoxAppend_CheckedChanged(object sender, EventArgs e)
         {
             checkBoxAppend.Text = checkBoxAppend.Checked ? "Yes" : "No";
+        }
+
+        private void label3_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

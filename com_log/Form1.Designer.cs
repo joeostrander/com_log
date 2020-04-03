@@ -53,6 +53,7 @@
             this.comboBoxDataBits = new System.Windows.Forms.ComboBox();
             this.LabelBitsPerSecond = new System.Windows.Forms.Label();
             this.comboBoxBitsPerSecond = new System.Windows.Forms.ComboBox();
+            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.statusStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -132,6 +133,7 @@
             this.label3.Size = new System.Drawing.Size(52, 13);
             this.label3.TabIndex = 13;
             this.label3.Text = "&Filename:";
+            this.label3.Click += new System.EventHandler(this.label3_Click);
             // 
             // linkLabelFilename
             // 
@@ -365,6 +367,7 @@
         internal System.Windows.Forms.ComboBox comboBoxDataBits;
         internal System.Windows.Forms.Label LabelBitsPerSecond;
         internal System.Windows.Forms.ComboBox comboBoxBitsPerSecond;
+        private System.Windows.Forms.ToolTip toolTip1;
     }
 }
 
